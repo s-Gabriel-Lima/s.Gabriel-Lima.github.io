@@ -1,0 +1,52 @@
+<html>
+<!-- Carregando TensorFlow.js. Necessario para utilização do  coco-ssd model. -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"> </script>
+<!-- Carregando o coco-ssd model. -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"> </script>
+
+<!--Carregando a imagem a ser analisada-->
+<img id="img" crossorigin alt="image" style='display:none' width="600px" height="600px" src="catdog.jpg"/>
+
+<canvas id="myCanvas">
+
+</canvas>
+
+<script>
+  //  Não é necessario o uso de imports visto que tanto o cocossd e o TensorFlow estão disponiveis na pagina devido a tag de script no começo do documento
+ 
+	//Obetendo a imagem e plotando a mesma na tela
+	window.onload = function() {
+	  var c = document.getElementById("myCanvas");
+	  var ctx = c.getContext("2d");
+	  var img = document.getElementById("img");
+	  ctx.canvas.width = window.innerWidth;
+	  ctx.canvas.height = window.innerHeight;
+	  ctx.drawImage(img, 0, 0,600,600);
+	};
+  const img = document.getElementById('img');
+  var c = document.getElementById("myCanvas");
+  var ctx = c.getContext("2d");
+  
+
+
+  // Carregando o modelo.
+  cocoSsd.load().then(model => {
+    // Detectando objetos na imagem
+    model.detect(img).then(predictions => {
+      console.log('Predictions: ', predictions);
+	  //Desenhando bordas a partir do resultado da detecção
+	  predictions.forEach(function(p) {
+		ctx.beginPath();
+		ctx.font = "bold 30px Arial";
+		ctx.strokeStyle = "#000";
+		ctx.rect(p.bbox[0], p.bbox[1],p.bbox[2],p.bbox[3]);
+		ctx.strokeStyle="#FF0000";
+		ctx.stroke();
+		ctx.fillStyle = "#FF0000";
+		ctx.fillText(p.class, (p.bbox[0]), p.bbox[1]);
+	  });
+	
+    });
+  });
+</script>
+</html>
